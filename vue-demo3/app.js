@@ -9,6 +9,15 @@ AV.init({
   appKey: APP_KEY
 });
 
+var TestObject = AV.Object.extend('TestObject');
+var testObject = new TestObject();
+testObject.save({
+  words: 'Hello World!'
+}).then(function(object) {
+  alert('LeanCloud Rocks!');
+});
+
+
 var app = new Vue({
   el: '#app',
   data: {
@@ -19,6 +28,7 @@ var app = new Vue({
     },
     newTodo: '',
     todoList: [],
+    currentUser: null,
   },
     created: function(){
     // onbeforeunload文档：https://developer.mozilla.org/zh-CN/docs/Web/API/Window/onbeforeunload
@@ -32,6 +42,8 @@ var app = new Vue({
     this.todoList = oldData || []
   },
   methods: {
+
+    //填加 TODO 功能
     addTodo: function(){
       this.todoList.push({
         title: this.newTodo,
@@ -42,21 +54,42 @@ var app = new Vue({
       console.log(this.todoList)
       this.newTodo = '';
     },
+
+    //移除 TODO 功能
     removeTodo: function(todo) {
       let index = this.todoList.indexOf(todo)
       this.todoList.splice(index, 1)
     },
-    signUp: function() {
-      // 新建 AVUser 对象实例
-      var user = new AV.User();
-      // 设置用户名
-      user.setUsername('this.formData.username');
-      // 设置密码
-      user.setPassword('this.formData.password');
-      user.signUp().then(function (loginedUser) {
-          console.log(loginedUser);
-      }, function (error) {
+
+    //注册功能
+    signUp: function () {
+      let user = new AV.User();
+      user.setUsername(this.formData.username);
+      user.setPassword(this.formData.password);
+      user.signUp().then((loginedUser) => {
+        this.currentUser = this.getCurrentUser
+        //console.log(loginedUser)
+        alert("注册成功")
+      }, (error) => {
+        alert("注册失败")
       });
+    },
+
+    //登录功能
+    logIn: function () {
+      AV.User.logIn(this.formData.username, this.formData.password).then((loginedUser) => {
+        this.currentUser = this.getCurrentUser;
+        //console.log(loginedUser);
+        alert("登录成功")
+      }, (error) => {
+        alert("登录失败")
+      })
+    },
+
+    getCurrentUser: function() {
+      let {id, createdAt, attributes: {username}} = AV.User.current()
+      return {id, username, createdAt}
     }
+
   }
 })  

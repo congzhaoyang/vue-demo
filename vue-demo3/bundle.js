@@ -278,6 +278,14 @@ _leancloudStorage2.default.init({
   appKey: APP_KEY
 });
 
+var TestObject = _leancloudStorage2.default.Object.extend('TestObject');
+var testObject = new TestObject();
+testObject.save({
+  words: 'Hello World!'
+}).then(function (object) {
+  alert('LeanCloud Rocks!');
+});
+
 var app = new _vue2.default({
   el: '#app',
   data: {
@@ -287,7 +295,8 @@ var app = new _vue2.default({
       password: ''
     },
     newTodo: '',
-    todoList: []
+    todoList: [],
+    currentUser: null
   },
   created: function created() {
     var _this = this;
@@ -303,6 +312,8 @@ var app = new _vue2.default({
     this.todoList = oldData || [];
   },
   methods: {
+
+    //填加 TODO 功能
     addTodo: function addTodo() {
       this.todoList.push({
         title: this.newTodo,
@@ -313,21 +324,51 @@ var app = new _vue2.default({
       console.log(this.todoList);
       this.newTodo = '';
     },
+
+    //移除 TODO 功能
     removeTodo: function removeTodo(todo) {
       var index = this.todoList.indexOf(todo);
       this.todoList.splice(index, 1);
     },
+
+    //注册功能
     signUp: function signUp() {
-      // 新建 AVUser 对象实例
+      var _this2 = this;
+
       var user = new _leancloudStorage2.default.User();
-      // 设置用户名
-      user.setUsername('this.formData.username');
-      // 设置密码
-      user.setPassword('this.formData.password');
+      user.setUsername(this.formData.username);
+      user.setPassword(this.formData.password);
       user.signUp().then(function (loginedUser) {
-        console.log(loginedUser);
-      }, function (error) {});
+        _this2.currentUser = _this2.getCurrentUser;
+        //console.log(loginedUser)
+        alert("注册成功");
+      }, function (error) {
+        alert("注册失败");
+      });
+    },
+
+    //登录功能
+    logIn: function logIn() {
+      var _this3 = this;
+
+      _leancloudStorage2.default.User.logIn(this.formData.username, this.formData.password).then(function (loginedUser) {
+        _this3.currentUser = _this3.getCurrentUser;
+        //console.log(loginedUser);
+        alert("登录成功");
+      }, function (error) {
+        alert("登录失败");
+      });
+    },
+
+    getCurrentUser: function getCurrentUser() {
+      var _AV$User$current = _leancloudStorage2.default.User.current(),
+          id = _AV$User$current.id,
+          createdAt = _AV$User$current.createdAt,
+          username = _AV$User$current.attributes.username;
+
+      return { id: id, username: username, createdAt: createdAt };
     }
+
   }
 });
 
