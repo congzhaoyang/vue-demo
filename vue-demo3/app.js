@@ -86,6 +86,14 @@ var app = new Vue({
       })
     },
 
+    //登出功能
+    logout: function () {
+       AV.User.logOut()
+       this.currentUser = null
+       window.location.reload()
+    },
+
+    //获取当前用户
     getCurrentUser: function() {
       let {id, createdAt, attributes: {username}} = AV.User.current()
       return {id, username, createdAt}

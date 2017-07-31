@@ -360,6 +360,14 @@ var app = new _vue2.default({
       });
     },
 
+    //登出功能
+    logout: function logout() {
+      _leancloudStorage2.default.User.logOut();
+      this.currentUser = null;
+      window.location.reload();
+    },
+
+    //获取当前用户
     getCurrentUser: function getCurrentUser() {
       var _AV$User$current = _leancloudStorage2.default.User.current(),
           id = _AV$User$current.id,
