@@ -40,6 +40,7 @@ var app = new Vue({
     let oldDataString = window.localStorage.getItem('myTodos')
     let oldData = JSON.parse(oldDataString)
     this.todoList = oldData || []
+
   },
   methods: {
 
@@ -95,8 +96,13 @@ var app = new Vue({
 
     //获取当前用户
     getCurrentUser: function() {
-      let {id, createdAt, attributes: {username}} = AV.User.current()
-      return {id, username, createdAt}
+      let current = AV.User.current()
+      if(current) {
+        let {id, createdAt, attributes: {username}} = current
+        return {id, username, createdAt}
+      } else {
+        return null
+      }
     }
 
   }

@@ -369,12 +369,16 @@ var app = new _vue2.default({
 
     //获取当前用户
     getCurrentUser: function getCurrentUser() {
-      var _AV$User$current = _leancloudStorage2.default.User.current(),
-          id = _AV$User$current.id,
-          createdAt = _AV$User$current.createdAt,
-          username = _AV$User$current.attributes.username;
+      var current = _leancloudStorage2.default.User.current();
+      if (current) {
+        var id = current.id,
+            createdAt = current.createdAt,
+            username = current.attributes.username;
 
-      return { id: id, username: username, createdAt: createdAt };
+        return { id: id, username: username, createdAt: createdAt };
+      } else {
+        return null;
+      }
     }
 
   }
