@@ -283,7 +283,7 @@ var testObject = new TestObject();
 testObject.save({
   words: 'Hello World!'
 }).then(function (object) {
-  alert('LeanCloud Rocks!');
+  //alert('LeanCloud Rocks!');
 });
 
 var app = new _vue2.default({
@@ -299,22 +299,25 @@ var app = new _vue2.default({
     currentUser: null
   },
   created: function created() {
-    var _this = this;
-
     this.currentUser = this.getCurrentUser();
-    if (this.currentUser) {
-      var query = new _leancloudStorage2.default.Query('AllTodos');
-      query.find().then(function (todos) {
-        var avAllTodos = todos[0]; // 因为理论上 AllTodos 只有一个，所以我们取结果的第一项
-        var id = avAllTodos.id;
-        _this.todoList = JSON.parse(avAllTodos.attributes.content); // 为什么有个 attributes？因为我从控制台看到的
-        _this.todoList.id = id; // 为什么给 todoList 这个数组设置 id？因为数组也是对象啊
-      }, function (error) {
-        console.error(error);
-      });
-    }
+    this.fetchTodos();
   },
   methods: {
+    fetchTodos: function fetchTodos() {
+      var _this = this;
+
+      if (this.currentUser) {
+        var query = new _leancloudStorage2.default.Query('AllTodos');
+        query.find().then(function (todos) {
+          var avAllTodos = todos[0]; // 因为理论上 AllTodos 只有一个，所以我们取结果的第一项
+          var id = avAllTodos.id;
+          _this.todoList = JSON.parse(avAllTodos.attributes.content); // 为什么有个 attributes？因为我从控制台看到的
+          _this.todoList.id = id; // 为什么给 todoList 这个数组设置 id？因为数组也是对象啊
+        }, function (error) {
+          console.error(error);
+        });
+      }
+    },
     //更新TODO功能
     updateTodos: function updateTodos() {
       // 想要知道如何更新对象，先看文档 https://leancloud.cn/docs/leanstorage_guide-js.html#更新对象
@@ -341,9 +344,9 @@ var app = new _vue2.default({
       avTodos.setACL(acl);
       avTodos.save().then(function (todo) {
         _this2.todoList.id = todo.id; // 一定要记得把 id 挂到 this.todoList 上，否则下次就不会调用 updateTodos 了
-        alert('保存成功 ' + todo);
+        //alert('保存成功 ' + todo);
       }, function (error) {
-        alert('保存失败 ' + todo);
+        //alert('保存失败 ' + todo);
       });
     },
     //报错或更新TODO
@@ -396,6 +399,7 @@ var app = new _vue2.default({
 
       _leancloudStorage2.default.User.logIn(this.formData.username, this.formData.password).then(function (loginedUser) {
         _this4.currentUser = _this4.getCurrentUser;
+        _this4.fetchTodos();
         //console.log(loginedUser);
         alert("登录成功");
       }, function (error) {

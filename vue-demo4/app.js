@@ -14,7 +14,7 @@ var testObject = new TestObject();
 testObject.save({
   words: 'Hello World!'
 }).then(function(object) {
-  alert('LeanCloud Rocks!');
+  //alert('LeanCloud Rocks!');
 });
 
 
@@ -31,21 +31,24 @@ var app = new Vue({
     currentUser: null,
   },
     created: function(){
-      this.currentUser = this.getCurrentUser();
+      this.currentUser = this.getCurrentUser()
+      this.fetchTodos()
+    },
+  methods: {
+    fetchTodos: function() {
       if(this.currentUser){
         var query = new AV.Query('AllTodos');
         query.find()
-        .then((todos) => {
+          .then((todos) => {
             let avAllTodos = todos[0] // 因为理论上 AllTodos 只有一个，所以我们取结果的第一项
             let id = avAllTodos.id
             this.todoList = JSON.parse(avAllTodos.attributes.content) // 为什么有个 attributes？因为我从控制台看到的
             this.todoList.id = id // 为什么给 todoList 这个数组设置 id？因为数组也是对象啊
           }, function(error){
             console.error(error) 
-          })
-        }
+        })
+      }
     },
-  methods: {
     //更新TODO功能
     updateTodos: function(){
       // 想要知道如何更新对象，先看文档 https://leancloud.cn/docs/leanstorage_guide-js.html#更新对象
@@ -70,9 +73,9 @@ var app = new Vue({
         avTodos.setACL(acl)
         avTodos.save().then((todo) => {
           this.todoList.id = todo.id  // 一定要记得把 id 挂到 this.todoList 上，否则下次就不会调用 updateTodos 了
-          alert('保存成功 ' + todo);
+          //alert('保存成功 ' + todo);
         }, function (error) {
-          alert('保存失败 ' + todo);
+          //alert('保存失败 ' + todo);
         });
     },
     //报错或更新TODO
@@ -120,7 +123,8 @@ var app = new Vue({
     //登录功能
     logIn: function () {
       AV.User.logIn(this.formData.username, this.formData.password).then((loginedUser) => {
-        this.currentUser = this.getCurrentUser;
+        this.currentUser = this.getCurrentUser
+        this.fetchTodos()
         //console.log(loginedUser);
         alert("登录成功")
       }, (error) => {
